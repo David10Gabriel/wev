@@ -1,5 +1,5 @@
 <template>
-  <v-app id="app" :dark="dark">
+  <v-app id="app" :dark="$vuetify.theme.dark">
     <v-navigation-drawer
       v-model="primaryDrawer.model"
       :permanent="primaryDrawer.type === 'permanent'"
@@ -10,9 +10,9 @@
       absolute
       overflow
       app
-      disable-resize-watcher 
+      disable-resize-watcher
     ></v-navigation-drawer>
-    <v-toolbar :clipped-left="primaryDrawer.clipped" app absolute>
+    <v-app-bar :clipped-left="primaryDrawer.clipped" app absolute>
       <!--v-toolbar-side-icon
         v-if="primaryDrawer.type !== 'permanent'"
         @click.stop="primaryDrawer.model = !primaryDrawer.model"
@@ -21,9 +21,9 @@
       <v-toolbar-title xs2>WhatsApp Export Viewer</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn icon xs2>
-        <v-icon @click="dark = !dark">wb_incandescent</v-icon>
+        <v-icon @click="$vuetify.theme.dark = !$vuetify.theme.dark">mdi-white-balance-incandescent</v-icon>
       </v-btn>
-    </v-toolbar>
+    </v-app-bar>
     <v-content>
       <v-container fluid>
         <v-layout align-center justify-center>
@@ -78,12 +78,14 @@
   
   export default {
     name: 'App',
+    created() {
+      this.$vuetify.theme.dark = true
+    },
     components: {
       HomeScreen
     },
     data () {
       return {
-        dark: false,
         drawers: ['Default (no property)', 'Permanent', 'Temporary'],
         primaryDrawer: {
           model: false,

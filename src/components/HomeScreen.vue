@@ -3,14 +3,14 @@
     <v-layout wrap>
       <v-flex xs12>
         <v-card id="welcomingCard">
-          <v-card-title primary-title>
-            <div>
-              <h3 class="headline mb-0">Bem vindo ao WhatsApp Export Viewer</h3>
-              <div>Aqui você poderá visualizar suas mensagens de WhatsApp exportadas como num chat!</div>
-            </div>
+          <v-card-title>
+            Bem vindo ao WhatsApp Export Viewer
           </v-card-title>
+          <v-card-subtitle>
+            <div>Aqui você poderá visualizar suas mensagens de WhatsApp exportadas como num chat!</div>
+          </v-card-subtitle>
           <v-card-text>
-              <div>Vamos começar, primeiro você deve exportar a sua conversa no aplicativo do WhatsApp e depois clicar em selecionar conversa abaixo...</div>
+            <div>Vamos começar, primeiro você deve exportar a sua conversa no aplicativo do WhatsApp e depois clicar em selecionar conversa abaixo...</div>
           </v-card-text>
           <v-card-actions v-show="true">
             <v-btn color="success" @click="$refs.inputChat.click()">Selecionar conversa</v-btn>
@@ -20,7 +20,7 @@
             <v-spacer></v-spacer>
             <v-btn depressed accesskey="n" color="success" @click="importChatFile">
               Próximo passo
-              <v-icon>navigate_next</v-icon>
+              <v-icon>mdi-chevron-right</v-icon>
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -29,19 +29,19 @@
 
         <v-card id="chatCard">
           <v-card-title primary-title>
-            <div>
-              <h3 class="headline mb-0">Essa é a sua conversa</h3>
-            </div>
+            Essa é a sua conversa
           </v-card-title>
           <v-card-text>
-            <v-flex v-for="message in chatRendered.loadedMessagesArray" :key="message.data" :text-right="message.position">
+            <v-flex v-for="message in chatRendered.loadedMessagesArray" :key="message.data" :text-right="message.position" class="pa-1">
               <v-tooltip top>
-                <v-chip v-if="message.position" color="green" text-color="white" pill slot="activator">
-                  {{ message.text }}<v-avatar align-end color="green darken-4">{{ message.sendersAvatar }}</v-avatar>
-                </v-chip>
-                <v-chip v-else color="green" text-color="white" pill slot="activator">
-                  <v-avatar left color="green darken-4">{{ message.sendersAvatar }}</v-avatar>{{ message.text }}
-                </v-chip>
+                <template v-slot:activator="{ on }">
+                  <v-chip v-if="message.position" color="green" text-color="white" pill v-on="on">
+                    {{ message.text }}<v-avatar right color="green darken-3">{{ message.sendersAvatar }}</v-avatar>
+                  </v-chip>
+                  <v-chip v-else color="green" text-color="white" pill v-on="on">
+                    <v-avatar left color="green darken-3">{{ message.sendersAvatar }}</v-avatar>{{ message.text }}
+                  </v-chip>
+                </template>
                 <span>{{message.sender + ' em ' + message.date }}</span>
               </v-tooltip>
             </v-flex>
@@ -50,7 +50,7 @@
             <v-spacer></v-spacer>
             <v-btn depressed accesskey="n" color="success">
               Próximo passo
-              <v-icon>navigate_next</v-icon>
+              <v-icon>mdi-chevron-right</v-icon>
             </v-btn>
           </v-card-actions>
         </v-card>
