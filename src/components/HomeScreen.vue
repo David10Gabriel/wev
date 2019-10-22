@@ -14,11 +14,11 @@
           </v-card-text>
           <v-card-actions v-show="true">
             <v-btn color="success" @click="$refs.inputChat.click()">Selecionar conversa</v-btn>
-            <input v-show="false" id="inputChat" ref="inputChat" type="file" accept=".txt" @change="importChatFile">
+            <input v-show="false" id="inputChat" ref="inputChat" type="file" accept=".txt">
             <v-spacer></v-spacer>
             <v-chip v-show="chatFile.name" label>{{ chatFile.name }}</v-chip>
             <v-spacer></v-spacer>
-            <v-btn depressed accesskey="n" color="success" @click="true">
+            <v-btn depressed accesskey="n" color="success" @click="importChatFile">
               Próximo passo
               <v-icon>navigate_next</v-icon>
             </v-btn>
@@ -34,11 +34,13 @@
             </div>
           </v-card-title>
           <v-card-text>
-            <v-flex grow v-for="message in chatRendered.loadedMessagesArray" :key="message.data">
+            <v-flex v-for="message in chatRendered.loadedMessagesArray" :key="message.data" :text-right="message.position">
               <v-tooltip top>
-                <v-chip slot="activator" color="green" text-color="white">
-                  <v-avatar color="green darken-4">{{ message.sendersAvatar }}</v-avatar>
-                  {{ message.message }}
+                <v-chip v-if="message.position" color="green" text-color="white" pill slot="activator">
+                  {{ message.text }}<v-avatar align-end color="green darken-4">{{ message.sendersAvatar }}</v-avatar>
+                </v-chip>
+                <v-chip v-else color="green" text-color="white" pill slot="activator">
+                  <v-avatar left color="green darken-4">{{ message.sendersAvatar }}</v-avatar>{{ message.text }}
                 </v-chip>
                 <span>{{message.sender + ' em ' + message.date }}</span>
               </v-tooltip>
@@ -46,7 +48,7 @@
           </v-card-text>
           <v-card-actions v-show="true">
             <v-spacer></v-spacer>
-            <v-btn depressed accesskey="n" color="success" @click="true">
+            <v-btn depressed accesskey="n" color="success">
               Próximo passo
               <v-icon>navigate_next</v-icon>
             </v-btn>
@@ -58,8 +60,6 @@
 </template>
 
 <script>
-  const fs = require('fs');
-  
   export default {
     data: () => ({
       chatFile: {
@@ -101,18 +101,23 @@
         let loadedRawMessagesArray = rawMessagesArray.slice(0,100).reverse()
         let loadedMessagesArray = []
         
+        let lastSender = { name: null, position: true}
+
         loadedRawMessagesArray.forEach(rawMessage => {
-          if (rawMessage) {
-            loadedMessagesArray.push({
-              data: rawMessage,
-              date: rawMessage.slice(1, 20),
-              sender: rawMessage.slice(22).split(': ')[0],
-              sendersAvatar: rawMessage.slice(22).split(': ')[0].slice(0,1)[0],
-              message: rawMessage.slice(22).split(': ').slice(1)[0]
-            })
-          }
+          let currentSender = rawMessage.includes(":") && rawMessage.includes("]") ? rawMessage.split(":")[2].split("]")[1].trimLeft() : "Whatsapp"
+          
+          loadedMessagesArray.push({
+            originalData: rawMessage,
+            date: rawMessage.split("]")[0].replace("[", "").trimLeft(),
+            sender: currentSender,
+            sendersAvatar: rawMessage.slice(22).split(': ')[0].slice(0,1)[0],
+            text: rawMessage.split(":").slice(3, 10000).join(),
+            position: lastSender.name === currentSender ? lastSender.position : !lastSender.position
+          })
+          
+          lastSender = { name: currentSender, position: lastSender.nome === currentSender ? lastSender.position : !lastSender.position}
         })
-        console.log(loadedMessagesArray)
+
         this.chatRendered.loadedMessagesArray = loadedMessagesArray 
       }
 
